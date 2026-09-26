@@ -12,7 +12,7 @@ class Lecturer(Mentor):
 
 
 class Reviewer(Mentor):
-    def is_valid(self, course, student):
+    def _is_valid(self, course, student):
         return (
             isinstance(student, Student)
             and course in self.courses_attached
@@ -20,7 +20,7 @@ class Reviewer(Mentor):
         )
 
     def rate_hw(self, student, course, grade):
-        if self.is_valid(course, student):
+        if self._is_valid(course, student):
             if course in student.grades:
                 student.grades[course] += [grade]
             else:
@@ -38,7 +38,7 @@ class Student:
         self.courses_in_progress = []
         self.grades = {}
 
-    def is_valid(self, course, lecturer):
+    def _is_valid(self, course, lecturer):
         return (
             isinstance(lecturer, Lecturer)
             and course in lecturer.courses_attached
@@ -46,7 +46,7 @@ class Student:
         )
 
     def rate_lecture(self, lecturer, course, grade):
-        if self.is_valid(course, lecturer):
+        if self._is_valid(course, lecturer):
             if course in lecturer.grades:
                 lecturer.grades[course] += [grade]
             else:

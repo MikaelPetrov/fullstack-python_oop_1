@@ -6,15 +6,15 @@ class Mentor:
 
 
 class Lecturer(Mentor):
+    def __init__(self, name, surname):
+        super().__init__(name, surname)
+        self.grades = {}
+
     def __str__(self):
         avg_grade = self._calc_avg_grade()
 
         res = f"Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {avg_grade:.1f}"
         return res
-
-    def __init__(self, name, surname):
-        super().__init__(name, surname)
-        self.grades = {}
 
     def __lt__(self, other):
         if not isinstance(other, Lecturer):
