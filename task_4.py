@@ -47,7 +47,7 @@ class Reviewer(Mentor):
         )
 
     def rate_hw(self, student, course, grade):
-        if self._is_valid(course, student):
+        if self._is_valid(course, student) and 0 < grade < 11:
             if course in student.grades:
                 student.grades[course] += [grade]
             else:
@@ -107,7 +107,7 @@ class Student:
         )
 
     def rate_lecture(self, lecturer, course, grade):
-        if self._is_valid(course, lecturer):
+        if self._is_valid(course, lecturer) and 0 < grade < 11:
             if course in lecturer.grades:
                 lecturer.grades[course] += [grade]
             else:
@@ -117,20 +117,32 @@ class Student:
 
 
 reviewer = Reviewer("Some", "Buddy")
-
 lecturer1 = Lecturer("Some", "Buddy")
-lecturer1.grades = {"Python": [10, 9], "Java": [10]}
 lecturer2 = Lecturer("Another", "Lecturer")
-lecturer2.grades = {"Python": [10, 7], "Java": [8]}
-
 student1 = Student("Ruoy", "Eman", "M")
-student1.grades = {"Python": [10, 9], "Java": [10]}
-student1.courses_in_progress += ["Python", "Java"]
-student1.finished_courses += ["Git"]
 student2 = Student("Some", "Body", "F")
-student2.grades = {"Python": [8, 7], "Java": [8]}
+
+reviewer.courses_attached += ["Python", "Git"]
+lecturer1.courses_attached += ["Python", "Java"]
+lecturer2.courses_attached += ["Python", "Java"]
+student1.courses_in_progress += ["Python", "Java"]
 student2.courses_in_progress += ["Python", "Java"]
+student1.finished_courses += ["Git"]
 student2.finished_courses += ["Git"]
+
+student1.rate_lecture(lecturer1, "Python", 10)
+student1.rate_lecture(lecturer1, "Python", 9)
+student1.rate_lecture(lecturer1, "Java", 10)
+student2.rate_lecture(lecturer2, "Python", 10)
+student2.rate_lecture(lecturer2, "Python", 7)
+student2.rate_lecture(lecturer2, "Java", 8)
+
+reviewer.rate_hw(student1, "Python", 10)
+reviewer.rate_hw(student1, "Python", 9)
+reviewer.rate_hw(student1, "Java", 10)
+reviewer.rate_hw(student2, "Python", 8)
+reviewer.rate_hw(student2, "Python", 7)
+reviewer.rate_hw(student2, "Java", 8)
 
 
 def avg_grade_all_students(students_list, course_name):
