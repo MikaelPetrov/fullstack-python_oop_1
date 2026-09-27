@@ -47,7 +47,7 @@ class Reviewer(Mentor):
         )
 
     def rate_hw(self, student, course, grade):
-        if self._is_valid(course, student):
+        if self._is_valid(course, student) and 0 < grade < 11:
             if course in student.grades:
                 student.grades[course] += [grade]
             else:
@@ -107,7 +107,7 @@ class Student:
         )
 
     def rate_lecture(self, lecturer, course, grade):
-        if self._is_valid(course, lecturer):
+        if self._is_valid(course, lecturer) and 0 < grade < 11:
             if course in lecturer.grades:
                 lecturer.grades[course] += [grade]
             else:
@@ -117,14 +117,22 @@ class Student:
 
 
 reviewer = Reviewer("Some", "Buddy")
-
 lecturer = Lecturer("Some", "Buddy")
-lecturer.grades = {"Python": [10, 9], "Java": [10]}
-
 student = Student("Ruoy", "Eman", "M")
-student.grades = {"Python": [10, 9], "Java": [10]}
+
+reviewer.courses_attached += ["Python", "Git"]
+lecturer.courses_attached += ["Python", "Java"]
 student.courses_in_progress += ["Python", "Java"]
 student.finished_courses += ["Git"]
+
+student.rate_lecture(lecturer, "Python", 10)
+student.rate_lecture(lecturer, "Python", 9)
+student.rate_lecture(lecturer, "Java", 10)
+
+reviewer.rate_hw(student, "Python", 10)
+reviewer.rate_hw(student, "Python", 9)
+reviewer.rate_hw(student, "Java", 10)
+
 
 print(reviewer)
 print(lecturer)
