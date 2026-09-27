@@ -117,23 +117,62 @@ class Student:
 
 
 reviewer = Reviewer("Some", "Buddy")
-lecturer = Lecturer("Some", "Buddy")
-student = Student("Ruoy", "Eman", "M")
+lecturer1 = Lecturer("Some", "Buddy")
+lecturer2 = Lecturer("Another", "Lecturer")
+student1 = Student("Ruoy", "Eman", "M")
+student2 = Student("Some", "Body", "F")
 
 reviewer.courses_attached += ["Python", "Git"]
-lecturer.courses_attached += ["Python", "Java"]
-student.courses_in_progress += ["Python", "Java"]
-student.finished_courses += ["Git"]
+lecturer1.courses_attached += ["Python", "Java"]
+lecturer2.courses_attached += ["Python", "Java"]
+student1.courses_in_progress += ["Python", "Java"]
+student2.courses_in_progress += ["Python", "Java"]
+student1.finished_courses += ["Git"]
+student2.finished_courses += ["Git"]
 
-student.rate_lecture(lecturer, "Python", 10)
-student.rate_lecture(lecturer, "Python", 9)
-student.rate_lecture(lecturer, "Java", 10)
+student1.rate_lecture(lecturer1, "Python", 10)
+student1.rate_lecture(lecturer1, "Python", 9)
+student1.rate_lecture(lecturer1, "Java", 10)
+student2.rate_lecture(lecturer2, "Python", 10)
+student2.rate_lecture(lecturer2, "Python", 7)
+student2.rate_lecture(lecturer2, "Java", 8)
 
-reviewer.rate_hw(student, "Python", 10)
-reviewer.rate_hw(student, "Python", 9)
-reviewer.rate_hw(student, "Java", 10)
+reviewer.rate_hw(student1, "Python", 10)
+reviewer.rate_hw(student1, "Python", 9)
+reviewer.rate_hw(student1, "Java", 10)
+reviewer.rate_hw(student2, "Python", 8)
+reviewer.rate_hw(student2, "Python", 7)
+reviewer.rate_hw(student2, "Java", 8)
 
 
-print(reviewer)
-print(lecturer)
-print(student)
+def avg_grade_all_students(students_list, course_name):
+    all_grades = []
+
+    for student in students_list:
+        if isinstance(student, Student) and course_name in student.grades:
+            all_grades.extend(student.grades[course_name])
+
+    if not all_grades:
+        return f"Нет оценок по курсу '{course_name}'"
+
+    return sum(all_grades) / len(all_grades)
+
+
+def avg_grade_all_lecturers(lecturers_list, course_name):
+    all_grades = []
+
+    for lecturer in lecturers_list:
+        if isinstance(lecturer, Lecturer) and course_name in lecturer.grades:
+            all_grades.extend(lecturer.grades[course_name])
+
+    if not all_grades:
+        return f"Нет оценок по курсу '{course_name}'"
+
+    return sum(all_grades) / len(all_grades)
+
+
+avg_students_python = avg_grade_all_students([student1, student2], "Python")
+avg_lecturers_python = avg_grade_all_lecturers([lecturer1, lecturer2], "Python")
+
+print(f"Средняя оценка всех студентов по курсу 'Python': {avg_students_python:.1f}")
+print(f"Средняя оценка всех лекторов по курсу 'Python': {avg_lecturers_python:.1f}")

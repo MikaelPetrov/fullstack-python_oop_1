@@ -1,60 +1,71 @@
-from collections import defaultdict
+class Mentor:
+    def __init__(self, name, surname):
+        self.name = name
+        self.surname = surname
+        self.courses_attached = []
 
 
-def parse_recipes_from_file(file_path: str) -> dict:
-    cook_book = {}
-
-    with open(file_path, encoding="utf-8") as file:
-        lines = iter(file)
-
-        for line in lines:
-            dish_name = line.strip()
-            if not dish_name:
-                continue
-
-            ingr_count = int(next(lines))
-
-            ingrs = []
-            for _ in range(ingr_count):
-                ingr_line = next(lines)
-
-                first_pipe = ingr_line.find("|")
-                second_pipe = ingr_line.find("|", first_pipe + 1)
-
-                ingrs.append(
-                    {
-                        "ingredient_name": ingr_line[:first_pipe].strip(),
-                        "quantity": int(ingr_line[first_pipe + 1 : second_pipe]),
-                        "measure": ingr_line[second_pipe + 1 :].strip(),
-                    }
-                )
-
-            cook_book[dish_name] = ingrs
-
-    return cook_book
+class Lecturer(Mentor):
+    def __init__(self, name, surname):
+        super().__init__(name, surname)
+        self.grades = {}
 
 
-recipes = parse_recipes_from_file("recipes.txt")
-get_recipe = recipes.get
+class Reviewer(Mentor):
+    def _is_valid(self, course, student):
+        return (
+            isinstance(student, Student)
+            and course in self.courses_attached
+            and course in student.courses_in_progress
+        )
+
+    def rate_hw(self, student, course, grade):
+        if self._is_valid(course, student):
+            if course in student.grades:
+                student.grades[course] += [grade]
+            else:
+                student.grades[course] = [grade]
+        else:
+            return "Ошибка"
 
 
-def get_shop_list_by_dishes(dishes: dict, person_count: int) -> dict:
-    result = defaultdict(lambda: {"measure": "", "quantity": 0})
+class Student:
+    def __init__(self, name, surname, gender):
+        self.name = name
+        self.surname = surname
+        self.gender = gender
+        self.finished_courses = []
+        self.courses_in_progress = []
+        self.grades = {}
 
-    for d in dishes:
-        ingrs = get_recipe(d)
-        if not ingrs:
-            continue
+    def _is_valid(self, course, lecturer):
+        return (
+            isinstance(lecturer, Lecturer)
+            and course in lecturer.courses_attached
+            and course in self.courses_in_progress
+        )
 
-        for i in ingrs:
-            name = i["ingredient_name"]
+    def rate_lecture(self, lecturer, course, grade):
+        if self._is_valid(course, lecturer):
+            if course in lecturer.grades:
+                lecturer.grades[course] += [grade]
+            else:
+                lecturer.grades[course] = [grade]
+        else:
+            return "Ошибка"
 
-            item = result[name]
 
-            item["measure"] = i["measure"]
-            item["quantity"] = i["quantity"] * person_count
+lecturer = Lecturer("Иван", "Иванов")
+reviewer = Reviewer("Пётр", "Петров")
+student = Student("Алёхина", "Ольга", "Ж")
 
-    return dict(result)
+student.courses_in_progress += ["Python", "Java"]
+lecturer.courses_attached += ["Python", "C++"]
+reviewer.courses_attached += ["Python", "C++"]
 
+print(student.rate_lecture(lecturer, "Python", 7))  # None
+print(student.rate_lecture(lecturer, "Java", 8))  # Ошибка
+print(student.rate_lecture(lecturer, "С++", 8))  # Ошибка
+print(student.rate_lecture(reviewer, "Python", 6))  # Ошибка
 
-print(get_shop_list_by_dishes(["Омлет", "Фахитос"], 2))
+print(lecturer.grades)  # {'Python': [7]}
